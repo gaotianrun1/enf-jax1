@@ -15,6 +15,7 @@ meta:
 
 training:
   num_inner_steps: 3
+  num_epochs: 11
 
 optimizer:
   learning_rate_snef: 1e-4

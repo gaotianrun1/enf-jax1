@@ -118,6 +118,7 @@ class JaxTrainer:
             # Validate every n epochs
             if epoch % self.config.test.test_interval == 0:
                 self.validate_epoch(state)
+            
         return state
 
     def train_epoch(self, state):
@@ -180,7 +181,7 @@ class JaxTrainer:
             self.checkpoint_manager.save(step=self.epoch, args=ocp.args.Composite(
                 state=ocp.args.StandardSave(state),
                 config=ocp.args.JsonSave(OmegaConf.to_container(self.config))))
-
+        
     def load_checkpoint(self):
         """ Load the latest checkpoint"""
         ckpt = self.checkpoint_manager.restore(self.checkpoint_manager.latest_step())
