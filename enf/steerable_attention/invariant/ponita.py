@@ -58,6 +58,8 @@ class Ponita2D(BaseInvariant):
         # This invariant is 3D
         self.dim = 3
 
+    # a(x,p)=ϕ(p−1x) 表示：先对 (x)做p的逆作用——也就是把x转到以p为参考的相对坐标，再通过某个函数 ϕ(⋅)做进一步嵌入
+    # 在SE(2) 的情形下，一个元素p可以记作 (ppos, pori)，表示平移 t和旋转 Rθ。那么 p−1x  =  R−θp(xpos−ppos)以及相应的方向差 (θx−θp).
     def __call__(self, x, p):
         """ Calculate the Ponita invariants between two sets of coordinates.
         Args:
@@ -79,8 +81,8 @@ class Ponita2D(BaseInvariant):
 
         # Calculate ponita invariants, shapes are [batch_size, num_coords, num_latents, num_x_ori, num_z_ori, 1].
         invariant1 = (rel_pos[..., 0] * p_ori[..., 0] + rel_pos[..., 1] * p_ori[..., 1])
-        invariant2 = (-rel_pos[..., 0] * p_ori[..., 1] + rel_pos[..., 1] * p_ori[..., 0])
-        invariant3 = (x_ori * p_ori).sum(axis=-1)
+        invariant2 = (-rel_pos[..., 0] * p_ori[..., 1] + rel_pos[..., 1] * p_ori[..., 0]) # inv1 和 inv2 一起等价于在 pori​ 坐标系下描述相对位置 r
+        invariant3 = (x_ori * p_ori).sum(axis=-1) # inv3=cos(θx​−θp​) 描述二者朝向的差异
         invariants = jnp.stack([invariant1, invariant2, invariant3], axis=-1)
 
-        return invariants
+        return invariants # a(x,p)​=(r⋅pori​,r x pori,xori​⋅pori​)
